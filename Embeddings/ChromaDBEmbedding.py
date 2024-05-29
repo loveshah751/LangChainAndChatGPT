@@ -25,12 +25,28 @@ chromaDbDockerConnection = Settings(
 )
 
 docs = loader.load_and_split(text_splitter=splitter)
-db = Chroma.from_documents(
-    embedding=embeddings,
-    documents=docs,
+
+db = Chroma(
+    embedding_function=embeddings,
     client_settings=chromaDbDockerConnection
 )
 
+# db = Chroma.from_documents(
+#     embedding=embeddings,
+#     documents=docs,
+#     client_settings=chromaDbDockerConnection
+# )
+
+
+# it will delete the existing Embedding created during previous Program.
+db.delete_collection()
+
+# it will creates the embeddings for the split documents
+db = db.from_documents(
+    documents=docs,
+    embedding=embeddings,
+    client_settings=chromaDbDockerConnection
+)
 results = db.similarity_search("What is interesting fact about the English language?")
 
 for result in results:
